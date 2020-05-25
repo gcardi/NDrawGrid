@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{6A9574A6-48B1-4665-8943-D37E8A6DA28F}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="NDrawGridPkgRun.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="NDrawGridPkgDsgn.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="NDrawGridPkgRun">
+        <MSBuild Projects="NDrawGridPkgRun.cbproj"/>
+    </Target>
+    <Target Name="NDrawGridPkgRun:Clean">
+        <MSBuild Projects="NDrawGridPkgRun.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NDrawGridPkgRun:Make">
+        <MSBuild Projects="NDrawGridPkgRun.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="NDrawGridPkgDsgn">
+        <MSBuild Projects="NDrawGridPkgDsgn.cbproj"/>
+    </Target>
+    <Target Name="NDrawGridPkgDsgn:Clean">
+        <MSBuild Projects="NDrawGridPkgDsgn.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="NDrawGridPkgDsgn:Make">
+        <MSBuild Projects="NDrawGridPkgDsgn.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="NDrawGridPkgRun;NDrawGridPkgDsgn"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="NDrawGridPkgRun:Clean;NDrawGridPkgDsgn:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="NDrawGridPkgRun:Make;NDrawGridPkgDsgn:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
