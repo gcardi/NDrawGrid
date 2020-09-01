@@ -166,18 +166,6 @@ __fastcall TCustomNDrawGrid::TCustomNDrawGrid(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
-/*
-namespace Ndrawgrid
-{
-	void __fastcall PACKAGE Register()
-	{
-		TComponentClass classes[1] = { __classid( TNDrawGrid ) };
-		RegisterComponents( _T( "Anafestica" ), classes, 0 );
-	}
-}
-//---------------------------------------------------------------------------
-*/
-
 void __fastcall TCustomNDrawGrid::MouseDown( TMouseButton Button,
                                              TShiftState Shift, int X, int Y )
 {
@@ -191,7 +179,9 @@ void __fastcall TCustomNDrawGrid::MouseDown( TMouseButton Button,
              ( Options.Contains( goFixedRowClick ) && GridCoord.Y < FixedCols ) )
         {
             if ( onFixedCellCanClick_ ) {
-                if ( !onFixedCellCanClick_( this, Button, Shift, GridCoord.X, GridCoord.Y ) ) {
+                bool CanClick = false;
+                onFixedCellCanClick_( this, Button, Shift, GridCoord.X, GridCoord.Y, CanClick );
+                if ( !CanClick ) {
                     return;
                 }
             }
@@ -243,21 +233,22 @@ void __fastcall TCustomNDrawGrid::MouseUp( TMouseButton Button, TShiftState Shif
 }
 //---------------------------------------------------------------------------
 
-String TCustomNDrawGrid::GetCellText( int ACol, int ARow ) const
+UnicodeString TCustomNDrawGrid::GetCellText( int ACol, int ARow ) const
 {
+    UnicodeString Result;
     if ( ( ACol >= 0 && ACol < FixedCols ) || ( ARow >= 0 && ARow < FixedRows ) ) {
         if ( onFixedCellGetText_ ) {
-            return onFixedCellGetText_(
-                       const_cast<TCustomNDrawGrid*>( this ), ACol, ARow
-                   );
+            onFixedCellGetText_(
+                const_cast<TCustomNDrawGrid*>( this ), ACol, ARow, Result
+            );
         }
     }
     else if ( onNormalCellGetText_ ) {
-        return onNormalCellGetText_(
-                   const_cast<TCustomNDrawGrid*>( this ), ACol, ARow
-               );
+        onNormalCellGetText_(
+            const_cast<TCustomNDrawGrid*>( this ), ACol, ARow, Result
+        );
     }
-    return String();
+    return Result;
 }
 //---------------------------------------------------------------------------
 
@@ -390,10 +381,11 @@ TInplaceEdit* __fastcall TCustomNDrawGrid::CreateEditor( void )
 
 TEditStyle __fastcall TCustomNDrawGrid::GetEditStyle( int ACol, int ARow )
 {
+    TEditStyle Result = esSimple;
     if ( onGetEditStyle_ ) {
-        return onGetEditStyle_( this, ACol, ARow );
+        onGetEditStyle_( this, ACol, ARow, Result );
     }
-    return esSimple;
+    return Result;
 }
 //---------------------------------------------------------------------------
 
@@ -514,8 +506,8 @@ void __fastcall TCustomNDrawGrid::ShowAutoHintIfNeeded( int X, int Y )
             }
 
             if ( onNormalCellGetText_ ) {
-                const String DisplayText =
-                    onNormalCellGetText_( this, GridCoord.X, GridCoord.Y );
+                UnicodeString DisplayText;
+                onNormalCellGetText_( this, GridCoord.X, GridCoord.Y, DisplayText );
                 Types::TRect CRect = CellRect( GridCoord.X, GridCoord.Y );
 
                 const Vcl::Graphics::TTextFormat CellFmt = GetCellTextFormat( GridCoord.X, GridCoord.Y );

@@ -35,12 +35,13 @@ public:
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 
-typedef String __fastcall ( __closure *TNDrawGridGetCellTextEvent )(
-    TObject* Sender, int ACol, int ARow
+typedef void __fastcall ( __closure *TNDrawGridGetCellTextEvent )(
+    TObject* Sender, int ACol, int ARow, UnicodeString& Result
 );
 
-typedef bool __fastcall ( __closure *TNDrawGridOnCellClickQueryEvent )(
-    TObject* Sender, TMouseButton Button, TShiftState Shift, int ACol, int ARow
+typedef void __fastcall ( __closure *TNDrawGridOnCellClickQueryEvent )(
+    TObject* Sender, TMouseButton Button, TShiftState Shift, int ACol, int ARow,
+    bool& Result
 );
 
 typedef void __fastcall ( __closure *TNDrawGridOnCellMouseEvent )(
@@ -48,8 +49,8 @@ typedef void __fastcall ( __closure *TNDrawGridOnCellMouseEvent )(
     TShiftState Shift, int X, int Y
 );
 
-typedef TEditStyle __fastcall ( __closure *TNDrawGridOnGetEditStyleEvent )(
-    TObject* Sender, int ACol, int ARow
+typedef void __fastcall ( __closure *TNDrawGridOnGetEditStyleEvent )(
+    TObject* Sender, int ACol, int ARow, TEditStyle& Result
 );
 
 typedef  void __fastcall ( __closure *TNDrawGridOnGetTextFormatEvent )(
@@ -123,7 +124,7 @@ private:
     void RefreshAutoHint();
 
 protected:
-    String GetCellText( int ACol, int ARow ) const;
+    UnicodeString GetCellText( int ACol, int ARow ) const;
     Vcl::Graphics::TTextFormat GetCellTextFormat( int ACol, int ARow ) const;
 
     DYNAMIC void __fastcall MouseDown( TMouseButton Button, TShiftState Shift,

@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{6A9574A6-48B1-4665-8943-D37E8A6DA28F}</ProjectGuid>
+        <ProjectGuid>{9226DDC3-B63E-43F0-89B5-564C00BAD610}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
         <Projects Include="NDrawGridPkgRun.cbproj">
