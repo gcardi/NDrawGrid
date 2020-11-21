@@ -41,68 +41,86 @@ void __fastcall TNDrawGridInplaceEditList::PaintWindow( HDC hDC )
         R = ButtonRect();
         Flags = 0;
         switch ( EditStyle ) {
-           case esPickList:
-               if ( StyleServices()->Enabled ) {
-                   if ( !ActiveList )
-                       Details = StyleServices()->GetElementDetails(
-                                     tcDropDownButtonDisabled
-                                 );
-                   else if ( Pressed )
-                       Details = StyleServices()->GetElementDetails(
-                                     tcDropDownButtonPressed
-                                  );
-                   else if ( mouseInControl_ )
-                       Details = StyleServices()->GetElementDetails(
-                                     tcDropDownButtonHot
-                                 );
-                       else
-                           Details = StyleServices()->GetElementDetails(
-                                         tcDropDownButtonNormal
-                                     );
-                   StyleServices()->DrawElement( hDC, Details, R );
+            case esPickList:
+                if ( StyleServices()->Enabled ) {
+                    if ( !ActiveList ) {
+                        Details =
+                            StyleServices()->GetElementDetails(
+                                tcDropDownButtonDisabled
+                            );
+                    }
+                    else if ( Pressed ) {
+                        Details =
+                            StyleServices()->GetElementDetails(
+                                tcDropDownButtonPressed
+                            );
+                    }
+                    else if ( mouseInControl_ ) {
+                        Details =
+                            StyleServices()->GetElementDetails(
+                                tcDropDownButtonHot
+                            );
+                    }
+                    else {
+                        Details =
+                            StyleServices()->GetElementDetails(
+                                tcDropDownButtonNormal
+                            );
+                    }
+                    StyleServices()->DrawElement( hDC, Details, R );
                 }
                 else {
-                    if ( !ActiveList )
+                    if ( !ActiveList ) {
                         Flags = DFCS_INACTIVE;
-					else if ( Pressed )
+                    }
+                    else if ( Pressed ) {
                         Flags = DFCS_FLAT | DFCS_PUSHED;
-                    DrawFrameControl( hDC, &R, DFC_SCROLL, Flags | DFCS_SCROLLCOMBOBOX );
+                    }
+                    ::DrawFrameControl( hDC, &R, DFC_SCROLL, Flags | DFCS_SCROLLCOMBOBOX );
                 }
                 break;
-           case esEllipsis:
-               if ( StyleServices()->Enabled ) {
-                   if ( Pressed )
-                       Details = StyleServices()->GetElementDetails(
-                                     tbPushButtonPressed
-                                 );
-                   else if ( mouseInControl_ )
-                                   Details = StyleServices()->GetElementDetails(
-                                                 tbPushButtonHot
-                                             );
-                     else
-                       Details = StyleServices()->GetElementDetails(
-                                     tbPushButtonNormal
-                                 );
-                   StyleServices()->DrawElement( hDC, Details, R );
-               }
-               else {
-                   if ( Pressed )
-                       Flags = BF_FLAT;
-                         DrawEdge( hDC, &R, EDGE_RAISED, BF_RECT | BF_MIDDLE | Flags );
-               }
-                       X = R.Left + ( ( R.Right - R.Left ) / 2 ) - 1 + int( Pressed );
-                       Y = R.Top + ( ( R.Bottom - R.Top ) / 2 ) - 1 + int( Pressed );
-                       W = ButtonWidth / 8;
-                       if ( !W )
-                           ++W;
-                       PatBlt( hDC, X, Y, W, W, BLACKNESS );
-                       PatBlt( hDC, X - ( W * 2 ), Y, W, W, BLACKNESS );
-                       PatBlt( hDC, X + ( W * 2 ), Y, W, W, BLACKNESS );
-                       break;
-           case esSimple:
-               break;
+            case esEllipsis:
+                if ( StyleServices()->Enabled ) {
+                    if ( Pressed ) {
+                        Details =
+                            StyleServices()->GetElementDetails(
+                                tbPushButtonPressed
+                            );
+                    }
+                    else if ( mouseInControl_ ) {
+                        Details =
+                            StyleServices()->GetElementDetails( tbPushButtonHot );
+                    }
+                    else {
+                        Details =
+                            StyleServices()->GetElementDetails(
+                                tbPushButtonNormal
+                            );
+                    }
+                    StyleServices()->DrawElement( hDC, Details, R );
+                }
+                else {
+                    if ( Pressed ) {
+                        Flags = BF_FLAT;
+                    }
+                    ::DrawEdge( hDC, &R, EDGE_RAISED, BF_RECT | BF_MIDDLE | Flags );
+                }
+
+                X = R.Left + ( ( R.Right - R.Left ) / 2 ) - 1 +
+                    static_cast<int>( Pressed );
+                Y = R.Top + ( ( R.Bottom - R.Top ) / 2 ) - 1 +
+                    static_cast<int>( Pressed );
+                W = ButtonWidth / 8;
+                if ( !W ) { ++W;  }
+                ::PatBlt( hDC, X, Y, W, W, BLACKNESS );
+                ::PatBlt( hDC, X - ( W * 2 ), Y, W, W, BLACKNESS );
+                ::PatBlt( hDC, X + ( W * 2 ), Y, W, W, BLACKNESS );
+                break;
+            //case esSimple:
+            default:
+                break;
         }
-        ExcludeClipRect( hDC, R.Left, R.Top, R.Right, R.Bottom );
+        ::ExcludeClipRect( hDC, R.Left, R.Top, R.Right, R.Bottom );
     }
     TCustomMaskEdit::PaintWindow( hDC );
 }
@@ -110,8 +128,9 @@ void __fastcall TNDrawGridInplaceEditList::PaintWindow( HDC hDC )
 
 void __fastcall TNDrawGridInplaceEditList::DropDown( void )
 {
-    if ( TNDrawGrid* const NGrid = dynamic_cast<TNDrawGrid*>( Grid ) )
+    if ( TNDrawGrid* const NGrid = dynamic_cast<TNDrawGrid*>( Grid ) ) {
         Ctl3D = NGrid->Ctl3D;
+    }
     inherited::DropDown();
 }
 //---------------------------------------------------------------------------
@@ -120,20 +139,18 @@ void __fastcall TNDrawGridInplaceEditList::WndProc( Winapi::Messages::TMessage &
 {
     inherited::WndProc( Message );
     switch ( Message.Msg ) {
-            case CM_MOUSEENTER:
-                  //if ( StyleServices()->Enabled && !mouseInControl_ ) {
-                  if ( !mouseInControl_ ) {
-                        mouseInControl_ = true;
-                        Invalidate();
-                  }
-                  break;
-            case CM_MOUSELEAVE:
-                  //if ( StyleServices()->Enabled && mouseInControl_ ) {
-                  if ( mouseInControl_ ) {
-                        mouseInControl_ = false;
-                        Invalidate();
-                  }
-                  break;
+        case CM_MOUSEENTER:
+            if ( !mouseInControl_ ) {
+                mouseInControl_ = true;
+                Invalidate();
+            }
+            break;
+        case CM_MOUSELEAVE:
+            if ( mouseInControl_ ) {
+                mouseInControl_ = false;
+                Invalidate();
+            }
+            break;
     }
 }
 //---------------------------------------------------------------------------
@@ -205,14 +222,14 @@ void __fastcall TCustomNDrawGrid::MouseMove( TShiftState Shift, int X, int Y )
 template<typename T>
 class AssignOnDestruction {
 public:
-	explicit AssignOnDestruction( T& Ref, T const & Val ) : ref_( Ref ), val_( Val ) {}
-	~AssignOnDestruction() /*throw()*/ { ref_ = val_; }
+    explicit AssignOnDestruction( T& Ref, T const & Val ) : ref_( Ref ), val_( Val ) {}
+    ~AssignOnDestruction() { ref_ = val_; }
 private:
-	AssignOnDestruction( AssignOnDestruction const & );
-	AssignOnDestruction& operator=( AssignOnDestruction const & );
+    AssignOnDestruction( AssignOnDestruction const & );
+    AssignOnDestruction& operator=( AssignOnDestruction const & );
 
-	T& ref_;
-	T val_;
+    T& ref_;
+    T val_;
 };
 
 void __fastcall TCustomNDrawGrid::MouseUp( TMouseButton Button, TShiftState Shift,
