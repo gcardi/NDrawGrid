@@ -96,7 +96,6 @@ private:
     void __fastcall SetOnEditButtonClick( TNotifyEvent Value );
     void __fastcall SetOnGetPickListItems( TOnGetPickListItems Value );
 
-    //void __fastcall SetCellAutoHintEnabled( bool Val );
     void __fastcall ClearGridHintWindow();
     void __fastcall ShowAutoHintIfNeeded( int X, int Y );
 
@@ -198,8 +197,7 @@ protected:
         read = onFixedCellMouseUp_, write = onFixedCellMouseUp_
     };
     __property bool CellAutoHintEnabled = {
-        read = cellAutoHintEnabled_, write = cellAutoHintEnabled_,
-        default = 0
+        read = cellAutoHintEnabled_, write = cellAutoHintEnabled_
     };
     __property TNotifyEvent OnOverlay = {
        read = onOverlay_, write = onOverlay_
@@ -235,7 +233,7 @@ __published:
     __property BevelWidth = {default=1};
     __property BiDiMode;
     __property BorderStyle = {default=1};
-    __property CellAutoHintEnabled = { default = 0 };
+    __property CellAutoHintEnabled = {default = 0};
     __property ColCount = {default=5};
     __property Color = {default=-16777211};
     __property Constraints;
