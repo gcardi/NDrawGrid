@@ -17,10 +17,8 @@ using System::Uitypes::TColor;
 #pragma package(smart_init)
 
 //---------------------------------------------------------------------------
-#if defined( NDRAWGRID_USE_NAMESPACE )
 namespace Vcl {
 namespace Grids {
-#endif
 //---------------------------------------------------------------------------
 
 __fastcall TNDrawGridInplaceEditList::TNDrawGridInplaceEditList(
@@ -195,11 +193,13 @@ void __fastcall TCustomNDrawGrid::MouseDown( TMouseButton Button,
         if ( ( Options.Contains( goFixedColClick ) && GridCoord.X < FixedRows ) ||
              ( Options.Contains( goFixedRowClick ) && GridCoord.Y < FixedCols ) )
         {
-            if ( onFixedCellCanClick_ ) {
-                bool CanClick = false;
-                onFixedCellCanClick_( this, Button, Shift, GridCoord.X, GridCoord.Y, CanClick );
-                if ( !CanClick ) {
-                    return;
+            if ( !ComponentState.Contains( csDesigning ) ) {
+                if ( onFixedCellCanClick_ ) {
+                    bool CanClick = false;
+                    onFixedCellCanClick_( this, Button, Shift, GridCoord.X, GridCoord.Y, CanClick );
+                    if ( !CanClick ) {
+                        return;
+                    }
                 }
             }
         }
@@ -243,33 +243,37 @@ void __fastcall TCustomNDrawGrid::MouseUp( TMouseButton Button, TShiftState Shif
     }
     TGridCoord const GridCoord( MouseCoord( X,  Y ) );
     if ( ( GridCoord.X >= 0 && GridCoord.X < FixedCols ) || ( GridCoord.Y >= 0 && GridCoord.Y < FixedRows ) ) {
-        if ( onFixedCellMouseUp_ ) {
+        if ( !ComponentState.Contains( csDesigning ) && onFixedCellMouseUp_ ) {
             onFixedCellMouseUp_( this, GridCoord.X, GridCoord.Y, Button, Shift, X, Y );
         }
     }
 }
 //---------------------------------------------------------------------------
 
-UnicodeString TCustomNDrawGrid::GetCellText( int ACol, int ARow ) const
+UnicodeString TCustomNDrawGrid::GetCellText( System::LongInt ACol, System::LongInt ARow ) const
 {
     UnicodeString Result;
-    if ( ( ACol >= 0 && ACol < FixedCols ) || ( ARow >= 0 && ARow < FixedRows ) ) {
-        if ( onFixedCellGetText_ ) {
-            onFixedCellGetText_(
+
+    if ( !ComponentState.Contains( csDesigning ) ) {
+        if ( ( ACol >= 0 && ACol < FixedCols ) || ( ARow >= 0 && ARow < FixedRows ) ) {
+            if ( onFixedCellGetText_ ) {
+                onFixedCellGetText_(
+                    const_cast<TCustomNDrawGrid*>( this ), ACol, ARow, Result
+                );
+            }
+        }
+        else if ( onNormalCellGetText_ ) {
+            onNormalCellGetText_(
                 const_cast<TCustomNDrawGrid*>( this ), ACol, ARow, Result
             );
         }
-    }
-    else if ( onNormalCellGetText_ ) {
-        onNormalCellGetText_(
-            const_cast<TCustomNDrawGrid*>( this ), ACol, ARow, Result
-        );
     }
     return Result;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TCustomNDrawGrid::DrawCell( int ACol, int ARow, const TRect &Rect,
+void __fastcall TCustomNDrawGrid::DrawCell( System::LongInt ACol, System::LongInt ARow,
+                                            const System::Types::TRect &Rect,
                                             Grids::TGridDrawState AState )
 {
     TRect ARect( Rect );
@@ -291,10 +295,10 @@ void __fastcall TCustomNDrawGrid::DrawCell( int ACol, int ARow, const TRect &Rec
 void __fastcall TCustomNDrawGrid::DrawCellBackground(
                                             const System::Types::TRect &ARect,
                                             System::Uitypes::TColor AColor,
-                                            TGridDrawState AState,
-                                            int ACol, int ARow )
+                                            Grids::TGridDrawState AState,
+                                            System::LongInt ACol, System::LongInt ARow )
 {
-    if ( onDrawCellBackground_ ) {
+    if ( !ComponentState.Contains( csDesigning ) && onDrawCellBackground_ ) {
         onDrawCellBackground_( this, ARect, AColor, AState, ACol, ARow );
     }
     else {
@@ -305,10 +309,10 @@ void __fastcall TCustomNDrawGrid::DrawCellBackground(
 
 void __fastcall TCustomNDrawGrid::DrawCellHighlight(
                                              const System::Types::TRect &ARect,
-                                             TGridDrawState AState,
-                                             int ACol, int ARow )
+                                             Grids::TGridDrawState AState,
+                                             System::LongInt ACol, System::LongInt ARow )
 {
-    if ( onDrawCellHighlight_ ) {
+    if ( !ComponentState.Contains( csDesigning ) && onDrawCellHighlight_ ) {
         onDrawCellHighlight_( this, ARect, AState, ACol, ARow );
     }
     else {
@@ -320,8 +324,8 @@ void __fastcall TCustomNDrawGrid::DrawCellHighlight(
 void __fastcall TCustomNDrawGrid::DefaultDrawCellBackground(
                                              const System::Types::TRect &ARect,
                                              System::Uitypes::TColor AColor,
-                                             TGridDrawState AState,
-                                             int ACol, int ARow )
+                                             Grids::TGridDrawState AState,
+                                             System::LongInt ACol, System::LongInt ARow )
 {
     inherited::DrawCellBackground( ARect, AColor, AState, ACol, ARow );
 }
@@ -329,15 +333,15 @@ void __fastcall TCustomNDrawGrid::DefaultDrawCellBackground(
 
 void __fastcall TCustomNDrawGrid::DefaultDrawCellHighlight(
                                             const System::Types::TRect &ARect,
-                                            TGridDrawState AState,
-                                            int ACol, int ARow )
+                                            Grids::TGridDrawState AState,
+                                            System::LongInt ACol, System::LongInt ARow )
 {
     inherited::DrawCellHighlight( ARect, AState, ACol, ARow );
 }
 //---------------------------------------------------------------------------
 
 bool __fastcall TCustomNDrawGrid::BeginColumnDrag( int &Origin, int &Destination,
-                                                   TPoint const & MousePt )
+                                                   System::Types::TPoint const & MousePt )
 {
     return
         inherited::BeginColumnDrag( Origin, Destination, MousePt ) &&
@@ -346,7 +350,7 @@ bool __fastcall TCustomNDrawGrid::BeginColumnDrag( int &Origin, int &Destination
 //---------------------------------------------------------------------------
 
 bool __fastcall TCustomNDrawGrid::EndColumnDrag( int &Origin, int &Destination,
-                                                 TPoint const& MousePt )
+                                                 System::Types::TPoint const& MousePt )
 {
     return inherited::EndColumnDrag( Origin, Destination, MousePt );
 }
@@ -359,7 +363,7 @@ void __fastcall TCustomNDrawGrid::KeyPress( TCHAR &Key )
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TCustomNDrawGrid::KeyDown( Word &Key, Classes::TShiftState Shift )
+void __fastcall TCustomNDrawGrid::KeyDown( Word &Key, System::Classes::TShiftState Shift )
 {
     inherited::KeyDown( Key, Shift );
 
@@ -378,7 +382,7 @@ void __fastcall TCustomNDrawGrid::KeyDown( Word &Key, Classes::TShiftState Shift
 void __fastcall TCustomNDrawGrid::ColWidthsChanged( void )
 {
     inherited::ColWidthsChanged();
-    if ( onColWidthsChanged_ ) {
+    if ( !ComponentState.Contains( csDesigning ) && onColWidthsChanged_ ) {
         onColWidthsChanged_( this );
     }
 }
@@ -396,10 +400,10 @@ TInplaceEdit* __fastcall TCustomNDrawGrid::CreateEditor( void )
 }
 //---------------------------------------------------------------------------
 
-TEditStyle __fastcall TCustomNDrawGrid::GetEditStyle( int ACol, int ARow )
+TEditStyle __fastcall TCustomNDrawGrid::GetEditStyle( System::LongInt ACol, System::LongInt ARow )
 {
     TEditStyle Result = esSimple;
-    if ( onGetEditStyle_ ) {
+    if ( !ComponentState.Contains( csDesigning ) && onGetEditStyle_ ) {
         onGetEditStyle_( this, ACol, ARow, Result );
     }
     return Result;
@@ -466,7 +470,7 @@ void TCustomNDrawGrid::RefreshAutoHint()
 }
 //---------------------------------------------------------------------------
 
-bool __fastcall TCustomNDrawGrid::SelectCell( int ACol, int ARow )
+bool __fastcall TCustomNDrawGrid::SelectCell( System::LongInt ACol, System::LongInt ARow )
 {
 /*
     const TPoint CursorPos = ScreenToClient( Mouse->CursorPos );
@@ -496,11 +500,12 @@ void __fastcall TCustomNDrawGrid::TopLeftChanged( void )
 }
 //---------------------------------------------------------------------------
 
-Vcl::Graphics::TTextFormat TCustomNDrawGrid::GetCellTextFormat( int ACol, int ARow ) const
+Vcl::Graphics::TTextFormat TCustomNDrawGrid::GetCellTextFormat( System::LongInt ACol,
+                                                                System::LongInt ARow ) const
 {
     Vcl::Graphics::TTextFormat TextFmt =
        Vcl::Graphics::TTextFormat() << tfVerticalCenter << tfSingleLine << tfLeft;
-    if ( onGetTextFormat_ ) {
+    if ( !ComponentState.Contains( csDesigning ) && onGetTextFormat_ ) {
         onGetTextFormat_(
             const_cast<TCustomNDrawGrid*>( this ), ACol, ARow, TextFmt
         );
@@ -598,9 +603,14 @@ __fastcall TNDrawGrid::TNDrawGrid(TComponent* Owner)
 {
 }
 //---------------------------------------------------------------------------
-#if defined( NDRAWGRID_USE_NAMESPACE )
+
+static inline void ValidCtrCheck( TNDrawGrid * )
+{
+//	new TNDrawGrid( NULL );
+}
+//---------------------------------------------------------------------------
+
 } /* End of namespace Grids */
 } /* End of namespace Vcl */
-#endif
 //---------------------------------------------------------------------------
 

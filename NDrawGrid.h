@@ -3,6 +3,14 @@
 #ifndef NDrawGridH
 #define NDrawGridH
 //---------------------------------------------------------------------------
+#pragma option push
+#if defined(__BORLANDC__) && !defined(__clang__)
+#pragma option -w-      // All warnings off
+#pragma option -Vx      // Zero-length empty class member
+#endif
+#pragma pack(push,8)
+//---------------------------------------------------------------------------
+
 #include <System.SysUtils.hpp>
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
@@ -11,13 +19,11 @@
 #include <memory>
 
 //---------------------------------------------------------------------------
-#if defined( NDRAWGRID_USE_NAMESPACE )
 namespace Vcl {
 namespace Grids {
-#endif
 //---------------------------------------------------------------------------
 
-class TNDrawGridInplaceEditList : public TInplaceEditList
+class PACKAGE TNDrawGridInplaceEditList : public TInplaceEditList
 {
 private:
     typedef TInplaceEditList inherited;
@@ -40,21 +46,26 @@ typedef void __fastcall ( __closure *TNDrawGridGetCellTextEvent )(
 );
 
 typedef void __fastcall ( __closure *TNDrawGridOnCellClickQueryEvent )(
-    TObject* Sender, TMouseButton Button, TShiftState Shift, int ACol, int ARow,
-    bool& Result
+	System::TObject* Sender, System::Uitypes::TMouseButton Button,
+	System::Classes::TShiftState Shift,
+	System::LongInt ACol, System::LongInt ARow,
+	bool& Result
 );
 
 typedef void __fastcall ( __closure *TNDrawGridOnCellMouseEvent )(
-    TObject* Sender, int ACol, int ARow, TMouseButton Button,
-    TShiftState Shift, int X, int Y
+	System::TObject* Sender, System::LongInt ACol, System::LongInt ARow,
+	System::Uitypes::TMouseButton Button,
+	System::Classes::TShiftState Shift, int X, int Y
 );
 
 typedef void __fastcall ( __closure *TNDrawGridOnGetEditStyleEvent )(
-    TObject* Sender, int ACol, int ARow, TEditStyle& Result
+	System::TObject* Sender, System::LongInt ACol, System::LongInt ARow,
+	TEditStyle& Result
 );
 
 typedef  void __fastcall ( __closure *TNDrawGridOnGetTextFormatEvent )(
-    TObject* Sender, int ACol, int ARow, Vcl::Graphics::TTextFormat& Format
+	System::TObject* Sender, System::LongInt ACol, System::LongInt ARow,
+	Vcl::Graphics::TTextFormat& Format
 );
 
 typedef  void __fastcall ( __closure *TNDrawGridOnDrawCellBackgroundEvent )(
@@ -63,8 +74,8 @@ typedef  void __fastcall ( __closure *TNDrawGridOnDrawCellBackgroundEvent )(
 );
 
 typedef  void __fastcall ( __closure *TNDrawGridOnDrawCellHighlight )(
-    TObject* Sender, const System::Types::TRect &ARect, TGridDrawState AState,
-    int ACol, int ARow
+    System::TObject* Sender, const System::Types::TRect &ARect,
+    Grids::TGridDrawState AState, System::LongInt ACol, System::LongInt ARow
 );
 
 class PACKAGE TCustomNDrawGrid : public TCustomDrawGrid
@@ -84,11 +95,11 @@ private:
     TOnGetPickListItems onGetPickListItems_;
     TNDrawGridGetCellTextEvent onNormalCellGetText_;
     std::unique_ptr<THintWindow> gridHintWindow_;
-    int gridCurrentHintCol_;
-    int gridCurrentHintRow_;
+    System::LongInt gridCurrentHintCol_;
+    System::LongInt gridCurrentHintRow_;
     bool cellAutoHintEnabled_;
     bool mouseDown_;
-    TNotifyEvent onOverlay_;
+    System::Classes::TNotifyEvent onOverlay_;
     TNDrawGridOnDrawCellBackgroundEvent onDrawCellBackground_;
     TNDrawGridOnDrawCellHighlight onDrawCellHighlight_;
 
@@ -108,7 +119,7 @@ private:
         }
     private:
         TCustomNDrawGrid& obj_;
-        TMouseMoveEvent oldOnMouseMove_;
+        Vcl::Controls::TMouseMoveEvent oldOnMouseMove_;
 
         RestoreOnMouseMovePropertyOnDestruction(
             RestoreOnMouseMovePropertyOnDestruction const &
@@ -123,8 +134,8 @@ private:
     void RefreshAutoHint();
 
 protected:
-    UnicodeString GetCellText( int ACol, int ARow ) const;
-    Vcl::Graphics::TTextFormat GetCellTextFormat( int ACol, int ARow ) const;
+    UnicodeString GetCellText( System::LongInt ACol, System::LongInt ARow ) const;
+    Vcl::Graphics::TTextFormat GetCellTextFormat( System::LongInt ACol, System::LongInt ARow ) const;
 
     DYNAMIC void __fastcall MouseDown( TMouseButton Button, TShiftState Shift,
                                        int X, int Y );
@@ -138,18 +149,22 @@ protected:
     DYNAMIC void __fastcall KeyPress( TCHAR &Key );
     DYNAMIC void __fastcall KeyDown( Word &Key, Classes::TShiftState Shift );
     DYNAMIC void __fastcall ColWidthsChanged( void );
-    virtual void __fastcall DrawCell( int ACol, int ARow, const TRect &ARect,
+    virtual void __fastcall DrawCell( System::LongInt ACol, System::LongInt ARow,
+                                      const System::Types::TRect &ARect,
                                       Grids::TGridDrawState AState );
     virtual void __fastcall DrawCellBackground( const System::Types::TRect &ARect,
                                                 System::Uitypes::TColor AColor,
                                                 TGridDrawState AState,
-                                                int ACol, int ARow );
+                                                System::LongInt ACol,
+                                                System::LongInt ARow );
     virtual void __fastcall DrawCellHighlight( const System::Types::TRect &ARect,
                                                TGridDrawState AState,
-                                               int ACol, int ARow );
+                                               System::LongInt ACol,
+                                               System::LongInt ARow );
     virtual TInplaceEdit* __fastcall CreateEditor( void );
-    DYNAMIC TEditStyle __fastcall GetEditStyle( int ACol, int ARow );
-    virtual bool __fastcall SelectCell( int ACol, int ARow );
+    DYNAMIC TEditStyle __fastcall GetEditStyle( System::LongInt ACol,
+                                                System::LongInt ARow );
+    virtual bool __fastcall SelectCell( System::LongInt ACol, System::LongInt ARow );
     DYNAMIC void __fastcall TopLeftChanged( void );
     virtual void __fastcall Paint( void );
     virtual void __fastcall WndProc( Winapi::Messages::TMessage &Message );
@@ -161,10 +176,10 @@ public:
     void __fastcall DefaultDrawCellBackground( const System::Types::TRect &ARect,
                                                System::Uitypes::TColor AColor,
                                                TGridDrawState AState,
-                                               int ACol, int ARow );
+                                               System::LongInt ACol, System::LongInt ARow );
     void __fastcall DefaultDrawCellHighlight( const System::Types::TRect &ARect,
                                               TGridDrawState AState,
-                                              int ACol, int ARow );
+                                              System::LongInt ACol, System::LongInt ARow );
 protected:
     __property TNotifyEvent OnEditButtonClick = {
         read = onEditButtonClick_, write = SetOnEditButtonClick
@@ -322,15 +337,19 @@ __published:
 };
 
 //---------------------------------------------------------------------------
-#if defined( NDRAWGRID_USE_NAMESPACE )
 } /* End of namespace Grids */
 } /* End of namespace Vcl */
-#endif
 //---------------------------------------------------------------------------
 
-#if defined( NDRAWGRID_USE_NAMESPACE ) && !defined( NO_IMPLICIT_NAMESPACE_USE )
+#if !defined(DELPHIHEADER_NO_IMPLICIT_NAMESPACE_USE) && !defined(NO_USING_NAMESPACE_VCL_GRIDS)
 using namespace Vcl::Grids;
 #endif
+#if !defined(DELPHIHEADER_NO_IMPLICIT_NAMESPACE_USE) && !defined(NO_USING_NAMESPACE_VCL)
+using namespace Vcl;
+#endif
+
+#pragma pack(pop)
+#pragma option pop
 
 #endif
 

@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+#include <vcl.h>
 
 #pragma hdrstop
 
@@ -15,19 +16,14 @@
 //
 //---------------------------------------------------------------------------
 
-static inline void ValidCtrCheck( TNDrawGrid * )
-{
-	new TNDrawGrid( NULL );
-}
-//---------------------------------------------------------------------------
-
 namespace Ndrawgriddsgn
 {
 	void __fastcall PACKAGE Register()
 	{
 		TComponentClass classes[1] = { __classid( TNDrawGrid ) };
-		RegisterComponents( _T( "Anafestica" ), classes, 0 );
+		RegisterComponents( L"Anafestica", classes, 0 );
 	}
 }
 //---------------------------------------------------------------------------
+
 
