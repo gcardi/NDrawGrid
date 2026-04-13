@@ -190,8 +190,8 @@ void __fastcall TCustomNDrawGrid::MouseDown( TMouseButton Button,
     if ( FHotTrackCell.Pressed ) {
         TGridCoord const GridCoord( MouseCoord( X,  Y ) );
 
-        if ( ( Options.Contains( goFixedColClick ) && GridCoord.X < FixedRows ) ||
-             ( Options.Contains( goFixedRowClick ) && GridCoord.Y < FixedCols ) )
+        if ( ( Options.Contains( goFixedColClick ) && GridCoord.X < FixedCols ) ||
+             ( Options.Contains( goFixedRowClick ) && GridCoord.Y < FixedRows ) )
         {
             if ( !ComponentState.Contains( csDesigning ) ) {
                 if ( onFixedCellCanClick_ ) {
@@ -522,7 +522,8 @@ void __fastcall TCustomNDrawGrid::ShowAutoHintIfNeeded( int X, int Y )
         bool const HasFocus = FindControl( GetForegroundWindow() );
 
         TGridCoord const GridCoord( MouseCoord( X,  Y ) );
-        if ( HasFocus && GridCoord.Y >= FixedRows && GridCoord.X >= FixedCols ) {
+        if ( HasFocus && GridCoord.X >= FixedCols && GridCoord.X < ColCount
+                      && GridCoord.Y >= FixedRows && GridCoord.Y < RowCount ) {
             if ( gridCurrentHintCol_ != GridCoord.X || gridCurrentHintRow_ != GridCoord.Y  ) {
                 ClearGridHintWindow();
             }
