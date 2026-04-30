@@ -2,6 +2,8 @@ unit NDrawGridReg;
 
 interface
 
+{$R NDrawGridDsgnPkg_resources.res}
+
 procedure Register;
 
 implementation
