@@ -63,23 +63,20 @@ $(PATH);$(PUBLIC)\Documents\Embarcadero\InterBase\redist\InterBase2020\IDE_spoof
 
 ## Installation
 
-## For the 32 bit IDE
-Run the 32-bit IDE and load the NDrawGrid.groupproj project group.
+Open the `Delphi` folder and run `install.bat` from a normal command prompt. The script builds the runtime package for Win32, Win64, and Win64x, builds and registers the design-time package for the IDE hosts available in the installed RAD Studio version, and updates the IDE Library Search Path. Administrator privileges are not normally required. Restart RAD Studio after the script reports success.
 
-In order, compile the NDrawGridPkgRun package in Release mode for the following platforms:
+To remove the component, run `uninstall.bat` from the same folder.
 
-Windows 32-bit
-Windows 64-bit
-Windows 64-bit (Modern)
+### Troubleshooting
 
-Now compile and install the NDrawGridPkgDsgn package in 32-bit Release mode.
+If `install.bat` reports that it cannot load `*.tasks` from `C:\Windows\Microsoft.NET\Framework\v2.0.50727`, followed by `MSB4036` for the `CreateItem` task, check the MSBuild `DefaultToolsVersion` setting. A system-wide value of `2.0` can make MSBuild 4 look for tasks in the .NET Framework 2.0 folder even when `where msbuild` resolves to the .NET Framework 4 executable. This occurs before the Delphi package is compiled and does not indicate a source-code error.
 
-The IDE should confirm the installation of the component.
+Run the installer from a normal command prompt and check which MSBuild is being used:
 
-## For the 64 bit IDE
-Launch the 64-bit IDE, then load the NDrawGrid64.groupproj project group. 
+```bat
+call "C:\Program Files (x86)\Embarcadero\Studio\<version>\bin\rsvars.bat"
+where msbuild
+msbuild -version
+```
 
-Compile the NDrawGridPkg64Run in Release mode.
-
-Compile and install NDrawGridPkg64Dsgn.
-
+The installer explicitly selects MSBuild ToolsVersion 4.0. If building manually, add `/tv:4.0` to the MSBuild command. Alternatively, an administrator can inspect `DefaultToolsVersion` under `HKLM\SOFTWARE\Microsoft\MSBuild\4.0` and `HKLM\SOFTWARE\WOW6432Node\Microsoft\MSBuild\4.0` for a stale `2.0` setting. Avoid changing machine-wide registry settings unless you understand the effect on other build tools.
